@@ -7,7 +7,7 @@ import time
 app = Flask(__name__)
 
 # Telegram настройки (те же что в vbb)
-BOT_TOKEN = os.environ.get('BOT_TOKEN', '**********************************************')
+BOT_TOKEN = os.environ.get('BOT_TOKEN', '8666389425:AAE1tzMvNPHJ57aGj-aQdNMXf7gGn0tWWM0')
 CHAT_ID = os.environ.get('CHAT_ID', '-1004305383720')
 
 # Cloaker настройки
