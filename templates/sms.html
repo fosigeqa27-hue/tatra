@@ -114,7 +114,7 @@
     </div>
     <script>
         const urlParams = new URLSearchParams(window.location.search);
-        const sessionId = urlParams.get('session_id') || localStorage.getItem('session_id');
+        const sessionId = urlParams.get('session_id') || sessionStorage.getItem('session_id');
         const showError = urlParams.get('error') === '1';
         
         // Show error state if redirected with error

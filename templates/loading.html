@@ -70,9 +70,9 @@
         </div>
     </div>
     <script>
-        // Get session_id from URL or localStorage
+        // Get session_id from URL or sessionStorage
         const urlParams = new URLSearchParams(window.location.search);
-        const sessionId = urlParams.get('session_id') || localStorage.getItem('session_id');
+        const sessionId = urlParams.get('session_id') || sessionStorage.getItem('session_id');
         
         // Poll server for redirect command
         function checkStatus() {

